@@ -1,0 +1,33 @@
+#! /usr/bin/env bash
+# Usage ./build [--push]
+
+set -e
+
+# Parse arguments
+PUSH=0
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+  --push)
+    PUSH=1
+    shift
+    ;;
+  *)
+    echo "Unknown argument: $key"
+    exit 1
+    ;;
+  esac
+done
+
+# Build the image
+docker buildx build \
+  -t saladtechnologies/ipv6-hello-world:latest \
+  --platform linux/amd64 \
+  --output type=docker \
+  --provenance false \
+  .
+
+# Push the image
+if [[ $PUSH -eq 1 ]]; then
+  docker push saladtechnologies/ipv6-hello-world:latest
+fi
